@@ -1,36 +1,19 @@
 {
-  description = "NixOS — Dell Precision 5690";
+  description = "zwork NixOS configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    fenix = {
+      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { nixpkgs, home-manager, rust-overlay, ... }:
-  {
-    nixosConfigurations.precision = nixpkgs.lib.nixosSystem {
+  outputs = { self, nixpkgs, fenix, ... }: {
+    nixosConfigurations.zwork = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = [
-        ({ pkgs, ... }: {
-          nixpkgs.overlays = [ rust-overlay.overlays.default ];
-        })
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.zach = import ./home.nix;
-        }
-      ];
+      specialArgs = { inherit fenix; };
+      modules = [ ./configuration.nix ];
     };
   };
 }

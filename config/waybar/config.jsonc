@@ -1,0 +1,59 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 24,
+    "spacing": 0,
+    "modules-left": ["hyprland/workspaces", "custom/sep", "hyprland/window"],
+    "modules-center": [],
+    "modules-right": ["tray", "custom/sep", "cpu", "custom/sep", "memory", "custom/sep", "network", "custom/sep", "pulseaudio", "custom/sep", "battery", "custom/sep", "clock"],
+
+    "custom/sep": {
+        "format": "│",
+        "tooltip": false
+    },
+    "hyprland/workspaces": {
+        "format": "[{id}]",
+        "on-click": "activate"
+    },
+    "hyprland/window": {
+        "format": "> {}",
+        "max-length": 60,
+        "rewrite": {
+            "": "> _"
+        }
+    },
+    "cpu": {
+        "format": " {usage}%",
+        "interval": 5
+    },
+    "memory": {
+        "format": " {used:0.1f}G",
+        "interval": 5
+    },
+    "clock": {
+        "format": " {:%H:%M}",
+        "format-alt": " {:%Y-%m-%d %H:%M}",
+        "tooltip-format": "{:%A, %B %d, %Y}"
+    },
+    "battery": {
+        "format": "󰁹 {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-full": "󰁹 100%",
+        "format-warning": "󰁻 {capacity}%",
+        "interval": 30
+    },
+    "network": {
+        "format-wifi": "󰖩 {essid}",
+        "format-ethernet": "󰈀 eth",
+        "format-disconnected": "󰖪 --",
+        "tooltip-format": "{ipaddr}"
+    },
+    "pulseaudio": {
+        "format": "󰕾 {volume}%",
+        "format-muted": "󰝟 mute",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+    "tray": {
+        "spacing": 8
+    }
+}

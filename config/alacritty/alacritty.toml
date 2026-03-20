@@ -1,0 +1,122 @@
+[general]
+live_config_reload = true
+import = ["~/.config/alacritty/monochrome.toml"]
+
+[env]
+TERM = "alacritty"
+COLORTERM = "truecolor"
+
+[terminal]
+shell = { program = "/run/current-system/sw/bin/fish", args = [] }
+osc52 = "CopyPaste"
+
+[window]
+padding = { x = 8, y = 8 }
+dynamic_padding = true
+decorations = "None"
+startup_mode = "Maximized"
+dynamic_title = true
+decorations_theme_variant = "Dark"
+opacity = 1.0
+blur = false
+
+[scrolling]
+history = 100000
+multiplier = 5
+
+[font]
+size = 13.0
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
+offset = { x = 0, y = 1 }
+builtin_box_drawing = true
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+vi_mode_style = { shape = "Block", blinking = "Off" }
+blink_interval = 500
+blink_timeout = 0
+unfocused_hollow = true
+thickness = 0.2
+
+[selection]
+save_to_clipboard = true
+
+[mouse]
+hide_when_typing = true
+
+[[mouse.bindings]]
+mouse = "Middle"
+action = "Paste"
+
+[[mouse.bindings]]
+mouse = "Right"
+action = "Paste"
+
+[bell]
+duration = 0
+
+# Hints — regex pattern matching with jump labels
+[hints]
+alphabet = "jfkdlsahgurieowpq"
+
+# URLs — Ctrl+Shift+U
+[[hints.enabled]]
+regex = '(ipfs:|ipns:|magnet:|mailto:|gemini://|gopher://|https://|http://|news:|file://|git://|ssh://|ftp://)[^\u0000-\u001F\u007F-\u009F<>"\\s{-}\\^⟨⟩`]+'
+hyperlinks = true
+post_processing = true
+persist = false
+action = "Copy"
+command = { program = "xdg-open", args = [] }
+binding = { key = "U", mods = "Control|Shift" }
+mouse = { mods = "None", enabled = true }
+
+# File paths with line numbers — Ctrl+Shift+E
+[[hints.enabled]]
+regex = '([./~][\w./\-@]+|\w+[\w./\-@]*)\.\w+:\d+(:\d+)?'
+post_processing = false
+persist = false
+action = "Copy"
+binding = { key = "E", mods = "Control|Shift" }
+mouse = { mods = "None", enabled = true }
+
+# Git commit hashes — Ctrl+Shift+G
+[[hints.enabled]]
+regex = '[0-9a-f]{7,40}'
+post_processing = false
+persist = false
+action = "Copy"
+binding = { key = "G", mods = "Control|Shift" }
+mouse = { mods = "None", enabled = true }
+
+# IPv4 addresses — Ctrl+Shift+I
+[[hints.enabled]]
+regex = '(?-u:\b)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?(?-u:\b)'
+post_processing = false
+persist = false
+action = "Copy"
+binding = { key = "I", mods = "Control|Shift" }
+mouse = { mods = "None", enabled = true }
+
+[keyboard]
+bindings = [
+    { key = "C",        mods = "Control|Shift",  action = "Copy" },
+    { key = "V",        mods = "Control|Shift",  action = "Paste" },
+    { key = "Equals",   mods = "Control",        action = "IncreaseFontSize" },
+    { key = "Minus",    mods = "Control",        action = "DecreaseFontSize" },
+    { key = "Key0",     mods = "Control",        action = "ResetFontSize" },
+    { key = "PageUp",   mods = "Shift",          action = "ScrollPageUp" },
+    { key = "PageDown", mods = "Shift",          action = "ScrollPageDown" },
+    { key = "Home",     mods = "Shift",          action = "ScrollToTop" },
+    { key = "End",      mods = "Shift",          action = "ScrollToBottom" },
+    { key = "K",        mods = "Control|Shift",  action = "ScrollLineUp" },
+    { key = "J",        mods = "Control|Shift",  action = "ScrollLineDown" },
+    { key = "Space",    mods = "Control|Shift",  action = "ToggleViMode" },
+    { key = "F",        mods = "Control|Shift",  action = "SearchForward" },
+    { key = "N",        mods = "Control|Shift",  action = "CreateNewWindow" },
+    { key = "Return",   mods = "Control|Shift",  action = "SpawnNewInstance" },
+    { key = "F11",      mods = "None",           action = "ToggleFullscreen" },
+    { key = "L",        mods = "Control|Shift",  action = "ClearHistory" },
+]

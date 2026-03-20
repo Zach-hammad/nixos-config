@@ -1,64 +1,70 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, fenix, ... }:
 
+let
+  rust-toolchain = fenix.packages.${pkgs.system}.stable.withComponents [
+    "cargo" "clippy" "rust-src" "rustc" "rustfmt"
+  ];
+  rust-analyzer = fenix.packages.${pkgs.system}.rust-analyzer;
+in
 {
   imports = [
     ./hardware-configuration.nix
   ];
 
-  # Nix settings
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-  };
+  # Flakes
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Boot
+  # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelParams = [ "i915.enable_guc=3" ];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # Filesystem — btrfs options
-  fileSystems."/" = {
-    options = [ "compress=zstd" "space_cache=v2" ];
-  };
-  fileSystems."/home" = {
-    options = [ "compress=zstd" "space_cache=v2" ];
-  };
-  fileSystems."/nix" = {
-    options = [ "compress=zstd" "noatime" "space_cache=v2" ];
-  };
-  fileSystems."/var/log" = {
-    options = [ "compress=zstd" "space_cache=v2" ];
-  };
-  fileSystems."/.snapshots" = {
-    options = [ "compress=zstd" "space_cache=v2" ];
-  };
 
   # Networking
-  networking.hostName = "precision";
+  networking.hostName = "zwork";
   networking.networkmanager.enable = true;
 
-  # Locale / Time
+  # Time & locale
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
-
-  # Intel Arc GPU
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-      vpl-gpu-rt
-      intel-compute-runtime
-    ];
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_US.UTF-8";
+    LC_IDENTIFICATION = "en_US.UTF-8";
+    LC_MEASUREMENT = "en_US.UTF-8";
+    LC_MONETARY = "en_US.UTF-8";
+    LC_NAME = "en_US.UTF-8";
+    LC_NUMERIC = "en_US.UTF-8";
+    LC_PAPER = "en_US.UTF-8";
+    LC_TELEPHONE = "en_US.UTF-8";
+    LC_TIME = "en_US.UTF-8";
   };
-  environment.variables.LIBVA_DRIVER_NAME = "iHD";
 
-  # Audio — PipeWire
+  # Desktop: Hyprland
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+  hardware.graphics.enable = true;
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        user = "greeter";
+      };
+    };
+  };
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
+  };
+
+  # Hint Electron apps to use Wayland
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  # Printing
+  services.printing.enable = true;
+
+  # Sound: PipeWire
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -68,125 +74,163 @@
     wireplumber.enable = true;
   };
 
-  # Bluetooth
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
-
-  # Power management — TLP
-  services.tlp = {
-    enable = true;
-    settings = {
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
-      START_CHARGE_THRESH_BAT0 = 75;
-      STOP_CHARGE_THRESH_BAT0 = 80;
-    };
-  };
-  services.power-profiles-daemon.enable = false;
-
-  # GNOME
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Snapper — btrfs snapshots
-  services.snapper = {
-    snapshotInterval = "hourly";
-    configs.root = {
-      SUBVOLUME = "/";
-      ALLOW_USERS = [ "zach" ];
-      TIMELINE_CREATE = true;
-      TIMELINE_CLEANUP = true;
-      TIMELINE_LIMIT_HOURLY = 10;
-      TIMELINE_LIMIT_DAILY = 7;
-      TIMELINE_LIMIT_WEEKLY = 4;
-      TIMELINE_LIMIT_MONTHLY = 6;
-    };
-  };
+  # SSH
+  services.openssh.enable = true;
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
 
   # Docker
   virtualisation.docker.enable = true;
 
+  # Fish shell
+  programs.fish.enable = true;
+
+  # Direnv + nix-direnv
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # Firefox
+  programs.firefox.enable = true;
+
+  # Fonts
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.iosevka
+  ];
+  fonts.fontconfig = {
+    enable = true;
+    antialias = true;
+    hinting = {
+      enable = true;
+      style = "slight";
+    };
+    subpixel.rgba = "none";
+  };
+
   # User
   users.users.zach = {
     isNormalUser = true;
-    description = "Zach";
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" ];
-    shell = pkgs.zsh;
+    description = "Zacharia Hammad";
+    shell = pkgs.fish;
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
   };
-  programs.zsh.enable = true;
-
-  # Remove GNOME bloat
-  environment.gnome.excludePackages = with pkgs; [
-    epiphany
-    geary
-    gnome-music
-    gnome-tour
-    gnome-contacts
-    gnome-maps
-    totem
-    yelp
-    cheese
-    simple-scan
-  ];
 
   # System packages
   environment.systemPackages = with pkgs; [
-    # Terminal
-    kitty
+    # Rust toolchain (via fenix)
+    rust-toolchain
+    rust-analyzer
 
-    # CLI tools
-    git
-    gh
-    curl
-    wget
-    unzip
+    # Editor
+    helix
+
+    # Terminal & multiplexer
+    alacritty
+    zellij
+
+    # Hyprland ecosystem
+    wlogout
+    bibata-cursors
+    waybar
+    wofi
+    mako
+    hyprlock
+    hypridle
+    mpvpaper
+    wl-clipboard
+    cliphist
+    grim
+    slurp
+    hyprpolkitagent
+    networkmanagerapplet
+    blueman
+    brightnessctl
+    adw-gtk3
+
+    # Cargo extensions
+    bacon
+    cargo-watch
+    cargo-edit
+    cargo-expand
+    cargo-flamegraph
+    cargo-deny
+    cargo-audit
+    cargo-nextest
+    cargo-tarpaulin
+    cargo-bloat
+    cargo-outdated
+    cargo-msrv
+    cargo-insta
+    cargo-make
+
+    # Build acceleration
+    sccache
+    mold
+    clang
+    pkg-config
+
+    # Rust CLI tools
     ripgrep
     fd
     bat
     eza
+    zoxide
+    starship
+    tokei
+    dust
+    bottom
+    delta
+    sd
+    hyperfine
+    difftastic
     fzf
+    yazi
     jq
-    htop
-    btop
-    neovim
 
-    # GNOME extras
-    gnome-tweaks
-    gnome-extension-manager
-    wl-clipboard
-    grim
-    slurp
-    brightnessctl
+    # Git tools
+    git
+    gh
+    gitui
+    lazygit
 
-    # Filesystem / btrfs
-    btrfs-progs
-    snapper
+    # Debugging
+    lldb
+    gdb
 
-    # System
-    libnotify
-    vulkan-tools
-    libva-utils
-    glxinfo
+    # ML/AI essentials
+    python3
+    python3Packages.pip
+    python3Packages.virtualenv
 
-    # Fonts
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" ]; })
-    inter
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-emoji
+    # Build deps
+    openssl
+    openssl.dev
+
+    # ASCII art & fun
+    cmatrix
+    pipes-rs
+    cbonsai
+
+    # General
+    wget
+    curl
+    unzip
+    file
   ];
 
-  fonts.fontconfig.defaultFonts = {
-    monospace = [ "JetBrainsMono Nerd Font" ];
-    sansSerif = [ "Inter" ];
-    serif = [ "Noto Serif" ];
-    emoji = [ "Noto Color Emoji" ];
+  # Environment variables for Rust builds
+  environment.variables = {
+    RUST_SRC_PATH = "${rust-toolchain}/lib/rustlib/src/rust/library";
+    PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
   };
 
-  system.stateVersion = "25.05";
+  # Starship prompt for fish
+  programs.fish.interactiveShellInit = ''
+    starship init fish | source
+    zoxide init fish | source
+  '';
+
+  system.stateVersion = "25.11";
 }

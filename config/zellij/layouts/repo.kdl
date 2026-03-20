@@ -1,0 +1,16 @@
+layout {
+    pane split_direction="vertical" {
+        pane size="60%" {
+            command "hx"
+            args "."
+        }
+        pane split_direction="horizontal" size="40%" {
+            pane size="50%" {
+                command "bacon"
+            }
+            pane size="50%" {
+                command "claude"
+            }
+        }
+    }
+}

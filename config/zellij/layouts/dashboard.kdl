@@ -1,0 +1,21 @@
+layout {
+    pane split_direction="vertical" {
+        pane split_direction="horizontal" size="40%" {
+            pane size="40%" {
+                command "fish"
+                args "-c" "fetch; exec fish"
+            }
+            pane size="30%" {
+                command "fish"
+                args "-c" "cal -3; exec fish"
+            }
+            pane size="30%" {
+                command "fish"
+                args "-c" "echo '> recent git activity'; echo ''; for d in ~/work/*/*/.git; set r (dirname $d); set n (basename $r); set t (git -C $r log -1 --format=%ar 2>/dev/null); test -n $t; and echo \"  $n: $t\"; end | head -20; exec fish"
+            }
+        }
+        pane size="60%" {
+            command "btm"
+        }
+    }
+}

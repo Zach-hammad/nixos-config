@@ -1,0 +1,41 @@
+theme = "monochrome"
+
+[editor]
+line-number = "relative"
+cursorline = true
+auto-save = true
+idle-timeout = 400
+completion-trigger-len = 1
+color-modes = true
+bufferline = "multiple"
+true-color = true
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = []
+right = ["diagnostics", "selections", "position", "file-encoding"]
+separator = " "
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+
+[editor.indent-guides]
+render = true
+character = "│"
+
+[editor.file-picker]
+hidden = false
+
+[editor.soft-wrap]
+enable = true
+
+[keys.normal]
+C-s = ":w"
+space.q = ":q"
+space.Q = ":q!"

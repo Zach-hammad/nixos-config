@@ -1,0 +1,49 @@
+theme "monochrome"
+
+themes {
+    monochrome {
+        fg "#d4d4d4"
+        bg "#0a0a0a"
+        black "#1a1a1a"
+        red "#a0a0a0"
+        green "#b0b0b0"
+        yellow "#909090"
+        blue "#808080"
+        magenta "#959595"
+        cyan "#8a8a8a"
+        white "#d4d4d4"
+        orange "#888888"
+    }
+}
+
+default_shell "fish"
+pane_frames false
+default_layout "dev"
+simplified_ui true
+copy_on_select true
+scrollback_editor "hx"
+
+ui {
+    pane_frames {
+        hide_session_name true
+    }
+}
+
+keybinds {
+    shared_except "locked" {
+        bind "Alt h" { MoveFocusOrTab "Left"; }
+        bind "Alt l" { MoveFocusOrTab "Right"; }
+        bind "Alt j" { MoveFocus "Down"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        bind "Alt n" { NewPane; }
+        bind "Alt t" { NewTab; }
+        bind "Alt x" { CloseFocus; }
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+        bind "Alt 4" { GoToTab 4; }
+        bind "Alt f" { ToggleFocusFullscreen; }
+        bind "Alt =" { Resize "Increase"; }
+        bind "Alt -" { Resize "Decrease"; }
+    }
+}

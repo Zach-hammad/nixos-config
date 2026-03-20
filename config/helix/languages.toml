@@ -1,0 +1,21 @@
+[[language]]
+name = "rust"
+auto-format = true
+formatter = { command = "rustfmt" }
+
+[language-server.rust-analyzer.config]
+check.command = "clippy"
+cargo.features = "all"
+inlayHints.closingBraceHints.enable = true
+inlayHints.typeHints.enable = true
+inlayHints.chainingHints.enable = true
+inlayHints.parameterHints.enable = true
+
+[[language]]
+name = "toml"
+auto-format = true
+
+[[language]]
+name = "nix"
+auto-format = true
+formatter = { command = "nixfmt" }
